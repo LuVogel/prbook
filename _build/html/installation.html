@@ -50,6 +50,8 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.1/dist/embed-amd.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Introduction" href="introduction.html" />
@@ -127,6 +129,11 @@ const thebe_selector_output = ".output, .cell_output"
  <li class="toctree-l1">
   <a class="reference internal" href="modeling-knowledge.html">
    Modeling Knowledge
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="knowledge_modeling_and_likelihood_tests.html">
+   Knowledge Modeling and Likelihood Tests
   </a>
  </li>
  <li class="toctree-l1">
@@ -528,7 +535,7 @@ title="Print to PDF"
 <p>If you see the error ‘The current branch &lt;local branch name&gt; has no upstream branch’ for the first time, you must use the command <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span> <span class="pre">--set-upstream</span> <span class="pre">origin</span> <span class="pre">&lt;local</span> <span class="pre">branch</span> <span class="pre">name&gt;</span></code> instead of git push. You may just use the standard push command to make additional changes.</p>
 <p>Your entire history of changes will be kept in github as a distinct branch. Click the <code class="docutils literal notranslate"><span class="pre">Compare</span> <span class="pre">&amp;</span> <span class="pre">pull</span> <span class="pre">request</span></code> button on the repo website to finally upload your modifications to the main branch. This prompts you to provide a title and remarks about your changes; once you’ve added all the necessary details, click the <code class="docutils literal notranslate"><span class="pre">create</span> <span class="pre">pull</span> <span class="pre">request</span></code> to submit your pull request.</p>
 <p>Alternatively, you can create a Pull request by first Forking the repository into your account.  You should first launch your browser and access the <a class="reference external" href="https://github.com/swing-research/prbook">github repo</a>. For you to contribute your changes, a github account is required. You must fork the repository once you are on the prbook github page (click the <code class="docutils literal notranslate"><span class="pre">Fork</span></code> button in the top right corner). The repository is duplicated in your account as a result. You must clone your copy of the reposity onto your local machine after it has been forked. The syntax for the clone command is:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">git</span><span class="nd">@github</span><span class="o">.</span><span class="n">com</span><span class="p">:</span><span class="o">&lt;</span> <span class="n">your</span> <span class="n">github</span> <span class="n">username</span> <span class="o">&gt;/</span><span class="n">prbook</span><span class="o">.</span><span class="n">git</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">git</span><span class="nd">@github</span><span class="o">.</span><span class="n">com</span><span class="p">:</span><span class="o">&lt;</span> <span class="n">username</span> <span class="o">&gt;/</span><span class="n">prbook</span><span class="o">.</span><span class="n">git</span>
 </pre></div>
 </div>
 <p>You will have the personal copy of <code class="docutils literal notranslate"><span class="pre">prbook</span></code> downloaded in your local machine.  Open the file <code class="docutils literal notranslate"><span class="pre">./prbook/installation.md</span></code> and go to line ‘109’ and change the text from ‘&lt;your github username&gt;’ to ‘&lt;username&gt;’ or you can change it your github user name as well. Once changed, you need push the local changes to the github server. You can run the following command to push the changes.</p>
