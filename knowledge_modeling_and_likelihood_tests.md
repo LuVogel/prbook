@@ -13,6 +13,15 @@ kernelspec:
   name: python3
 ---
 
+```{code-cell}
+:tags: [hide-input]
+import numpy as np
+from ipywidgets import
+import matplotlib.pyplot as plt
+from scipy.stats import norm
+from scipy.stats import skewnorm
+import matplotlib as mpl
+```
 # Knowledge Modeling and Likelihood Tests
 
 ## Knowledge Modeling
@@ -140,16 +149,6 @@ $s$ is called shift and it determines how hard it is to predict $Y$
   
 ## Example without Likelihood ratio tests
 
-```{code-cell}
-:tags: [hide-input]
-import numpy as np
-from ipywidgets import *
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy.stats import norm
-from scipy.stats import skewnorm
-import matplotlib as mpl
-```
 
 ```{code-cell}
 :tags: [hide-input]
@@ -194,9 +193,6 @@ interact(update, thr=(5.0, 22.5, 0.1));
 
 ```{code-cell}
 :tags: [hide-input]
-
-
-from scipy.stats import norm
 
 sigma = 1
 loc1 = 0.0
