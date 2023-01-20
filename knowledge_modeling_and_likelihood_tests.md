@@ -294,8 +294,8 @@ prediction (0 or 1):
 - $\mathbb{E}[loss(0,Y)\mid X=x] = loss(0,0)\mathbb{P}[Y=0\mid X=x] + loss(0,1)\mathbb{P}[Y=1\mid X=x]$
 - $\mathbb{E}[loss(1,Y) \mid X=x] = loss(1,0)\mathbb{P}[Y=0\mid X=x] + loss(1,1)\mathbb{P}[Y=1\mid X=x]$
 
-Optimal assignment is to output $\hat{Y}(x) = 1$ whenever $\mathbb{E}[loss(1,Y)\mid X=x] \leq \mathbb{E}[loss(0,Y)
-\mid X=x]
+Optimal assignment is to output $\hat{Y}(x) = 1$ whenever $\mathbb{E}[loss(1,Y) \mid X=x] \leq \mathbb{E}[loss(0,Y)
+\mid X=x]$
 
 # Likelihood Tests
 
@@ -317,9 +317,9 @@ and $p_y$ is the probability of observing $Y$ without any given conditions (in o
 Remember our optimal predictor: $\hat{Y}(x) = \mathbb{1}\{\mathbb{P}[Y=1\mid X=x] \geq factor \cdot \mathbb{P}[Y=0\mid X=x]\}$
 With the help of Bayes and likelihood our optimal predictor becomes:
 - $\hat{Y}(x) = \mathbb{1}\{\frac{p(x\mid Y=1)}{p(x\mid Y=0)} \geq \frac{p_o(loss(1,0)-loss(0,0))}{p_1(loss(0,1)-loss(1,1))}\}$
-- $\mathbb{P}[Y=1 \mid X=x]$ is equals $\frac{p(x\mid Y=1)}{p(x\mid Y=0)}. $\mathbb{P}(X=x\mid Y=1)$ is the same as
+- $\mathbb{P}[Y=1 \mid X=x]$ is equals $\frac{p(x\mid Y=1)}{p(x\mid Y=0)}$. $\mathbb{P}(X=x\mid Y=1)$ is the same as
 $p(x\mid Y=1)$.
-- $\mathbb{P}[Y=0\mid X=x]$ is the same as $\frac{\mathbb{P}(Y=0)}{\mathbb{P}(Y=1)} which is the same as $\frac{p_0}{p_1}$
+- $\mathbb{P}[Y=0\mid X=x]$ is the same as $\frac{\mathbb{P}(Y=0)}{\mathbb{P}(Y=1)}$ which is the same as $\frac{p_0}{p_1}$
 - $p_0, p_1$ were defined above
 
 ## Likelihood Ratio Test
@@ -451,12 +451,13 @@ $p_1 = \mathbb{P}(Y=1)$ which is very small, e.g. $p_1 = 10^{-6}$.
 | $Y$ = 0 | 0   |  100  |
 | $Y$ = 1 | 0 | —1'000'000  |
 
-We can define the optimal threshold value $\eta$ as $\ln(\eta) = log(\frac{p_0(loss(1,0)-loss(0,0))}{p_1(loss(0,1)-loss(1,1))})
+We can define the optimal threshold value $\eta$ as $\ln(\eta) = \ln(\frac{p_0(loss(1,0)-loss(0,0))}{p_1(loss(0,1)-loss(1,1))})
 \approx 4.61$. We are using the before defined function (see Likelihood Tests)
 
 To receive the optimal predictor we use the calculation $\ln p(x\mid Y=1) = \ln p(x\mid Y=0) = -\frac{1}{2}(x-s)^2 + \frac{1}{2}
 x^2 = sx-\frac{1}{2}s^2$. This leads to the following predictor:
-- $\hat{Y} = \mathbb{1}\{sX > \frac{1}{2}s^2+log(\eta)\}$ 
+- $\hat{Y} = \mathbb{1}\{sX > \frac{1}{2}s^2+\ln(\eta)\}$
+- We are doing it this way, since the classes are balanced like we had it in the snail example.  
 
 ## Types of Errors and successes
 
