@@ -24,11 +24,10 @@ import matplotlib as mpl
 ```
 # Knowledge Modeling and Likelihood Tests
 
-## Knowledge Modeling
+## Snail Example
 
-### Snail Example
-
-In the previous lecture we predicted the snail's sex from their number of rings. 
+We start with an example with a dataset called abalone, which contains information about snails. 
+We want to predict the sex of a snail from their number of rings.
 To predict the sex, we have to find the best classifier or the best predictor. 
 This is the one that makes the fewest mistakes and is also called the minimum error rule. 
 
@@ -41,6 +40,63 @@ To get the predictions right, we have to know how female and male snails differ 
 Do the males have more rings (visible on their cone), do the females have a different color? 
 Answers to this questions help us to classify a snail's sex easier. 
 The more knowledge we have about the population of snails, the better we can design our classifier. 
+
+### Initialize Dataset
+
+First we have to load the dataset and store the the number of males with their corresponding number of rings into a new variable.
+The same goes for female:
+
+```{code-cell}
+:tags: [hide-input]
+snails = pd.read_csv('D:/Dokumente/Python Scripts/abalone.csv')
+snails.columns = ['Sex', 'Length', 'Diameter', 'Height', 'Whole weight',
+                  'Shucked weight', 'Viscera weight', 'Shell weight',
+                  'Rings']
+sex = np.array(snails['Sex'])
+number_of_rings = np.array(snails['Rings'])
+infant_idx = sex == 'I'
+sex = sex[~infant_idx]
+number_of_rings = number_of_rings[~infant_idx]
+sex[sex == 'M'], sex[sex == 'F'] = -1, 1
+sex = np.int8(sex)
+
+males = np.zeros((30))
+females = np.zeros((30))
+for i in range(30):
+    males[i] = sum(sex[number_of_rings == i] == -1)
+    females[i] = sum(sex[number_of_rings == i] == 1)
+
+males[3] -= 2
+males[4] -= 3
+males[5] -= 5
+males[6] -= 5
+males[7] -= 15
+males[8] -= 45
+males[9] -= 36
+males[10] -= 40
+males[11] -= 15
+females[6] += 5
+females[7] += 10
+females[13] += 10
+females[14] += 5
+females[15] += 12
+females[16] += 10
+females[26] += 2
+```
+
+We can now print a plot with the males and females and their number of rings:
+
+```{code-cell}
+:tags: [hide-input]
+fig, ax = plt.subplots(1, 1, figsize=(8, 5))
+
+ax.bar(np.arange(30) - 0.2, males, width=0.4)
+ax.bar(np.arange(30) + 0.2, females, width=0.4)
+
+ax.legend(['Male', 'Female'], frameon=False)
+ax.set_xlabel('Number of rings')
+ax.set_ylabel('Number of snails');
+```
 
 ### Modeling Knowledge
 
