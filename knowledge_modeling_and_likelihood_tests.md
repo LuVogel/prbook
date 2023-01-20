@@ -23,9 +23,9 @@ from scipy.stats import skewnorm
 import matplotlib as mpl
 import pandas as pd
 ```
-# Knowledge Modeling and Likelihood Tests
+# Knowledge Modeling and Likelihood Tests (scribing task)
 
-## Snail Example
+# Snail Example
 
 We start with an example with a dataset called abalone, which contains information about snails. 
 We want to predict the sex of a snail from their number of rings.
@@ -40,7 +40,7 @@ Do the males have more rings (visible on their cone), do the females have a diff
 Answers to this questions help us to classify a snail's sex easier. 
 The more knowledge we have about the population of snails, the better we can design our classifier. 
 
-### Initialize Dataset
+## Initialize Dataset
 
 First we have to load the dataset and store the the number of males with their corresponding number of rings into a new variable.
 The same goes for female:
@@ -99,7 +99,7 @@ ax.set_xlabel('Number of rings')
 ax.set_ylabel('Number of snails');
 ```
 
-### What is the "best" classifier?
+## What is the "best" classifier?
 
 The best classifier or the best predictor, is the one that makes the fewest mistakes. 
 This is also called the minimum error rule. Remember the two mistakes we can make in the snail prediction:
@@ -111,11 +111,11 @@ ax.plot(-np.array([-1, 1])[np.int8(males > females)[3:]]);
 ```
 
 
-### A good but impractical rule
+## A good but impractical rule
 
 We need a good rule to find the best predictor. To do this, we have to measure the entire population of snails. 
 With the measurement, we get additional knowledge about the population / problem. This is what makes prediction possible. 
-### Modeling Knowledge
+## Modeling Knowledge
 
 Knowledge about the population makes predictions possible in the first place. 
 The more knowledge we have, the more accurate our classifier gets. To work with this knowledge, 
@@ -183,7 +183,7 @@ thrline, = axs[0].plot([thr0, thr0], [0, 0.20])
 interact(update, thr=(5.0, 22.5, 0.1));
 ```
 
-## Prediction
+# Prediction
 
 We use here $p$ for conditional probability, $p_0$ and $p_1$ as prior probabilities and $\mathbb{P}$ as probability itself.
 
@@ -201,7 +201,7 @@ Regarding snails: $p_0$ is the probability that a snail's sex is male and $p_1$ 
 Since we have the same count of males and females (see above), the probability of a snail being a male or female
 is $\frac{1}{2}$. This means that the classes are balanced. 
 
-### Prediction (continued)
+## Prediction (continued)
 
 
 
@@ -218,7 +218,7 @@ called joint distribution. The conditional probabilities (probability of $x$ giv
 If we have $p(x \mid Y = y)$ we have a special case called generative models or likelihood functions. In this model 
 we have the joint probability $p(x,y) = p(x \mid Y=y)p(Y=y)$. 
 
-### Generative Model
+## Generative Model
 
 A generative model is called so, because it can be used to generate random instances either of an observation
 and target, or of an observation $x$ given target value $y$. The term generative model is also used for models which 
@@ -228,7 +228,7 @@ potential samples of input variables.
  
 
 
-### Prediction via optimization
+## Prediction via optimization
 
 With the help of these definitions above, the optimal predictor can finally be calculated. Since we want the optimal predictor, 
 we can use optimization to get the correct result, in other words optimization over algorithms. Other 
@@ -259,7 +259,7 @@ Which leads to following equation:
 The result on the calculation of our optimization is called an estimate or a prediction. Written $\hat{Y} \equiv f(X)$
 
 
-#### Risk
+# Risk
 
 If we have calculated $\hat{Y}$ we are interested into how good is our prediction. First we introduce a term called Loss. 
 Since our prediction will make mistakes, we want to make the best out of it, so we are choosing a price which we are paying
@@ -272,34 +272,48 @@ as :
 
 To explain why the risk function is the mean of the loss function, we can average over samples from $\mathbb{P}$.
 To compute the loss, we have to choose samples from $\mathbb{P}$, but the question is how many samples should we take to get a 
-reliable sense of performance? The answer is, as many as needed to minimize the loss. 
+reliable sense of performance? The answer is, as many as needed to minimize the expected loss. 
 
 Obviously we want as fewer mistakes as possibles. Therefore, we want the smallest possible risk/risk-function. Instead of 
 looking for the biggest as in a maximization problem, we have here a minimization problem. We want to minimize our risk. 
 To minimize the risk, we have to use the prediction rule which leads to the smallest risk:
 - $\hat{Y} = f_{best}(X)$ where $f_{best} = arg\min\limits_{f \in A}R[f(X)]$. 
 
-This leads to the optimal predictor/estimate $\hat{Y}(x) = \mathbb{1}\{\mathbb{P}[Y=1\mid X=x] \geq factor \cdot 
-\mathbb{P}[Y=0 \mid X=0]\}$. $factor$ is a function regarding the different possible outcomes/losses:
-- $factor = \frac{loss(1,0) - loss(0,0)}{loss(0,1)-loss(1,1)}$
+##The optimal predictor
+
+This leads to the optimal predictor/estimate $\hat{Y}(x) = \mathbb{1}\{\mathbb{P}[Y=1\mid X=x] \geq \text{factor} \cdot 
+\mathbb{P}[Y=0 \mid X=0]\}$. $\text{factor}$ is a function regarding the different possible outcomes/losses:
+- $\text{factor} = \frac{loss(1,0) - loss(0,0)}{loss(0,1)-loss(1,1)}$
+
+We can use the law of iterated expectation to proof this: 
+- $\mathbb{E}[loss(\hat{Y}(X),Y)], =\mathbb{E}[\mathbb{E}[loss(\hat{Y}(X),Y) \mid X]]$
+
+Outer expectation is over draws of $X$, inner over draws of $Y$ conditional on $X$. There are no constraints on 
+$\hat{Y}$ so we can minimize the expression for each $X=x$ independently. We can compute the expected losses for each
+prediction (0 or 1):
+- $\mathbb{E}[loss(0,Y)\mid X=x] = loss(0,0)\mathbb{P}[Y=0\mid X=x] + loss(0,1)\mathbb{P}[Y=1\mid X=x]$
+- $\mathbb{E}[loss(1,Y) \mid X=x] = loss(1,0)\mathbb{P}[Y=0\mid X=x] + loss(1,1)\mathbb{P}[Y=1\mid X=x]$
+
+Optimal assignment is to output $\hat{Y}(x) = 1$ whenever $\mathbb{E}[loss(1,Y)\mid X=x] \leq \mathbb{E}[loss(0,Y)
+\mid X=x]
 
 ## Likelihood Tests
 
 For likelihood tests, we have to know about the posterior probability as well as probabilities called likelihoods:
+
+**Bayes Theorem**: The probability of an event $A$ occurring given that $B$ is true is equals to the probability of event $B$ occurring 
+given that $A$ is true multiplied with the probability of $A$ divided by the probability of $B$
+
 - $\mathbb{P}[Y=y \mid X=x]$ are posterior probability
 - $p(x \mid Y = y)$ are likelihoods
-
-They are both used in the Bayes Theorem:
-
-- The probability of an event $A$ occurring given that $B$ is true is equals to the probability of event $B$ occurring 
-given that $A$ is true multiplied with the probability of $A$ divided by the probability of $B$
-  
-- As mathematical statement: $P(A \mid B) = \frac{P(B \mid A)P(A)}{P(B)}$
+- As mathematical statement: $P(A \mid B) = \frac{P(B \mid A)P(A)}{P(B)}$. This is the posterior in terms of 
+bases using the likelihoods. 
 
 Using the Bayes Theorem, posterior probability and the likelihood we get:
 
-- $\mathbb{P}[Y=y \mid X=x] = \frac{p(x\mid Y=y)p_y}{p(x)}$, where $p(x)$ is the density of the marginal distribution of $X$.
-
+- $\mathbb{P}[Y=y \mid X=x] = \frac{p(x\mid Y=y)p_y}{p(x)}$, where $p(x)$ is the density of the marginal distribution of $X$, 
+and $p_y$ is the probability of observing $Y$ without any given conditions (in other words: density of prior distribution of $Y$).
+  
 Remember our optimal predictor: $\hat{Y}(x) = \mathbb{1}\{\mathbb{P}[Y=1\mid X=x] \geq factor \cdot \mathbb{P}[Y=0\mid X=x]\}$
 With the help of Bayes and likelihood our optimal predictor becomes:
 - $\hat{Y}(x) = \mathbb{1}\{\frac{p(x\mid Y=1)}{p(x\mid Y=0)} \geq \frac{p_o(loss(1,0)-loss(0,0))}{p_1(loss(0,1)-loss(1,1))}\}$
