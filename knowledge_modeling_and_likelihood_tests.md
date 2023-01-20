@@ -320,8 +320,10 @@ and $p_y$ is the probability of observing $Y$ without any given conditions (in o
 Remember our optimal predictor: $\hat{Y}(x) = \mathbb{1}\{\mathbb{P}[Y=1\mid X=x] \geq factor \cdot \mathbb{P}[Y=0\mid X=x]\}$
 With the help of Bayes and likelihood our optimal predictor becomes:
 - $\hat{Y}(x) = \mathbb{1}\{\frac{p(x\mid Y=1)}{p(x\mid Y=0)} \geq \frac{p_o(loss(1,0)-loss(0,0))}{p_1(loss(0,1)-loss(1,1))}\}$
-- $\mathbb{P}[Y=1 \mid X=x]$ is equals $\frac{p(x\mid Y=1)}{p(x\mid Y=0)}$. $\mathbb{P}(X=x\mid Y=1)$ is the same as
-$p(x\mid Y=1)$.
+- $\mathbb{P}[Y=1 \mid X=x]$ is equals $\frac{\mathbb{P}(X=x\mid Y=1)}{\mathbb{P}(X=x\mid Y=0)}$. 
+- $\mathbb{P}(X=x\mid Y=1)$ is the same as $p(x\mid Y=1)$.
+- $\mathbb{P}(X=x \mid Y=0)$ is the same as $p(x \mid Y=0)$.
+- leads to:$\mathbb{P}[Y=1 \mid X=x] = \frac{p(x\mid Y=1)}{p(x\mid Y=0)}$
 - $\mathbb{P}[Y=0\mid X=x]$ is the same as $\frac{\mathbb{P}(Y=0)}{\mathbb{P}(Y=1)}$ which is the same as $\frac{p_0}{p_1}$
 - $p_0, p_1$ were defined above
 
@@ -438,7 +440,7 @@ interact(update, thr=(x_min, x_max, (x_max - x_min) / 200));
 ```
 
 This is again the pdf of males and females regarding their number of rings. The difference to the plot before is,
-that we used here likelihood ratio tests. We tend to maximize $y$ which is the reason that we get a different plot. 
+that we used here likelihood ratio tests. Remember Signal and Noise Example: the red curve includes the shift $s$. 
 
 
 # Gaussian example
