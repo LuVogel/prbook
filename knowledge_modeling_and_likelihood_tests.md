@@ -47,7 +47,7 @@ The same goes for female:
 
 ```{code-cell}
 :tags: [hide-input]
-snails = pd.read_csv('/book_data/abalone.csv')
+snails = pd.read_csv('D:/Dokumente/UniBasel/7.Semester/Pattern Recognition/prbookOwn/book_data/abalone.csv')
 snails.columns = ['Sex', 'Length', 'Diameter', 'Height', 'Whole weight',
                   'Shucked weight', 'Viscera weight', 'Shell weight',
                   'Rings']
@@ -536,4 +536,8 @@ def update(thr=thr0):
 interact(update, thr=(x_min, x_max, (x_max - x_min) / 300));
 ```
 
-Here wer are again plotting the pdf of two classes. But this time we have a third curve (grey) which is the pdf of both classes together.
+We have three curves:
+
+- blue: gaussian distributed-curve ($\sim \mathcal{N}(x,1)$)
+- red: gaussian distributed-curve ($\sim \mathcal{N}(x,3)$)
+- grey: difference between red and blue
