@@ -204,12 +204,15 @@ is $\frac{1}{2}$. This means that the classes are balanced.
 ## Prediction (continued)
 
 
-
 $p_0$ and $p_1$ are proportions of two classes in the population. If we draw a large number of $n$ 
 of samples from $p$ there will be approximately $p_0n$ labels $0$ and $p_1n$ labels $1$.
+
+
 Remember snail example where we had $p_0 = p_1 = \frac{1}{2}$. 
 The patterns or groups are modeled by a random vector $X$. The distribution of $X$ depends on $Y$. 
-Since we have binary classification $Y$ can be either zero or one. This connection between $X$ and $Y$ is 
+Since we have binary classification $Y$ can be either zero or one. 
+
+This connection between $X$ and $Y$ is 
 called joint distribution. The conditional probabilities (probability of $x$ given $Y$) are 
 
 - $p(x \mid Y = 0)$
