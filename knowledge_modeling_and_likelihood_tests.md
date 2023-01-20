@@ -184,14 +184,18 @@ interact(update, thr=(5.0, 22.5, 0.1));
 ```
 
 ## Prediction
+
+We use here $p$ for conditional probability, $p_0$ and $p_1$ as prior probabilities and $\mathbb{P}$ as probability itself.
+
+
 In binary classification (0, 1) we can formalize the minimum error rule / the best predictor using the following definitions:
 We can use this again for the snail example. Instead of using male and female for the sex, we are using 0 and 1. Therefore 
 Y = 1, is predicting the snail's sex as female and Y=0 is predicting the snails sex as male. 
 Y is the label or in our case the sex of a snail, which we want to predict. 
 
 Assume that $Y$ has priori probabilities: 
-- $p_0 = \mathbb{P}[Y=0]
-- p_1=\mathbb{P}[Y=1]$
+- $p_0 = \mathbb{P}[Y=0]$
+- $p_1=\mathbb{P}[Y=1]$
 
 Regarding snails: $p_0$ is the probability that a snail's sex is male and $p_1$ is the probability that a snail's sex is female.
 Since we have the same count of males and females (see above), the probability of a snail being a male or female
@@ -199,7 +203,7 @@ is $\frac{1}{2}$. This means that the classes are balanced.
 
 ### Prediction (continued)
 
-We use here $p$ for conditional probability, $p_0$ and $p_1$ as prior probabilities and $\mathbb{P}$ as probability itself.
+
 
 $p_0$ and $p_1$ are proportions of two classes in the population. If we draw a large number of $n$ 
 of samples from $p$ there will be approximately $p_0n$ labels $0$ and $p_1n$ labels $1$.
@@ -213,6 +217,13 @@ called joint distribution. The conditional probabilities (probability of $x$ giv
 
 If we have $p(x \mid Y = y)$ we have a special case called generative models or likelihood functions. In this model 
 we have the joint probability $p(x,y) = p(x \mid Y=y)p(Y=y)$. 
+
+### Generative Model
+
+A generative model is called so, because it can be used to generate random instances either of an observation
+and target, or of an observation $x$ given target value $y$. The term generative model is also used for models which 
+generate instances of output variables in a way that has no clear relationship to the probability distributions over 
+potential samples of input variables. 
 
  
 
@@ -230,11 +241,20 @@ $ with the optimization problem to find $f \in A$ and $f$ has to minimize $\math
 the one with the least errors. Let's take a look at $\mathbb{P}$(mistake): 
 
 - To get the probability of false classified patterns, we have to think about all possibilities: 
-- $\mathbb{P}(f(X)=0 \mid Y=1)$: predict zero but actual is 1, calling for now $\mathbb{P}(0\_but\_1)$
-- $\mathbb{P}(f(X)=1 \mid Y=0)$: predict one but actual is 0, calling for now $\mathbb{P}(1\_but\_0)$
-- other cases are not interesting, since they are either predict zero and actual is zero or predict one and actual is one
-Using our knowledge from statistics/probability we have $\mathbb{P}$(mistake)= $\mathbb{P}(0\_but\_1)\cdot 
-  \mathbb{P}(Y=1) + \mathbb{P}(1\_but\_0)\cdot \mathbb{P}(Y=0)$
+- $\mathbb{P}(f(X)=0 \mid Y=1)$: predict zero but actual is 1
+- $\mathbb{P}(f(X)=1 \mid Y=0)$: predict one but actual is 0
+- $\mathbb{P}(f(X)=1 \mid Y=1)$: predict one and actual is 1
+- $\mathbb{P}(f(X)=0\mid Y=0)$: predict zero and actual is 0
+
+The last two cases are no mistakes, since we made the right prediction. Therefore, they are not interesting  for the optimization problem. 
+
+Using our knowledge from statistics/probability we have:
+- $\mathbb{P}$(mistake)= $\mathbb{P}(f(X)=0 \mid Y=1)\cdot 
+  \mathbb{P}(Y=1) + \mathbb{P}(f(X)=1 \mid Y=0)\cdot \mathbb{P}(Y=0)$
+
+Which leads to following equation:
+
+-$\mathbb{P}(X \geq n \mid Y=1) \mathbb{P}(Y=1) + \mathbb{P}(X > n \mid Y=1)\mathbb{P}(Y=0)$
   
 The result on the calculation of our optimization is called an estimate or a prediction. Written $\hat{Y} \equiv f(X)$
 
@@ -245,7 +265,7 @@ If we have calculated $\hat{Y}$ we are interested into how good is our predictio
 Since our prediction will make mistakes, we want to make the best out of it, so we are choosing a price which we are paying
 for different kind of mistakes. This is called loss or loss-function. An easy example of a loss-function could be:
 $ loss(\hat{y}, y) = \begin{cases} 0, \hat{y} = y \\ 1, \hat{y} \neq y \end{cases}$
-More interseting is the so called Risk. The risk defines the expectations how often our model do a mistake. Remember, 
+More interseting is the so called Risk. **The risk defines the expectations how often our model do a mistake**. Remember, 
 the mistake is connected to the before defined loss-function. Therefore we can define the risk in case of our prediction/estimation
 as :
 - $R[\hat{Y}]:=\mathbb{E}_{(X,Y)\sim \mathbb{P}}[loss(\hat{Y}(X),Y)]$
