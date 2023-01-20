@@ -115,7 +115,7 @@ ax.plot(-np.array([-1, 1])[np.int8(males > females)[3:]]);
 
 We need a good rule to find the best predictor. To do this, we have to measure the entire population of snails. 
 With the measurement, we get additional knowledge about the population / problem. This is what makes prediction possible. 
-## Modeling Knowledge
+# Modeling Knowledge
 
 Knowledge about the population makes predictions possible in the first place. 
 The more knowledge we have, the more accurate our classifier gets. To work with this knowledge, 
@@ -282,7 +282,7 @@ looking for the biggest as in a maximization problem, we have here a minimizatio
 To minimize the risk, we have to use the prediction rule which leads to the smallest risk:
 - $\hat{Y} = f_{best}(X)$ where $f_{best} = arg\min\limits_{f \in A}R[f(X)]$. 
 
-##The optimal predictor
+## The optimal predictor
 
 This leads to the optimal predictor/estimate $\hat{Y}(x) = \mathbb{1}\{\mathbb{P}[Y=1\mid X=x] \geq \text{factor} \cdot 
 \mathbb{P}[Y=0 \mid X=0]\}$. $\text{factor}$ is a function regarding the different possible outcomes/losses:
@@ -441,7 +441,7 @@ This is again the pdf of males and females regarding their number of rings. The 
 that we used here likelihood ratio tests. We tend to maximize $y$ which is the reason that we get a different plot. 
 
 
-## Gaussian example
+# Gaussian example
 
 Let's now work with Gaussian distribution. 
 - For this example we define a prior probability
@@ -462,7 +462,7 @@ x^2 = sx-\frac{1}{2}s^2$. This leads to the following predictor:
 - $\hat{Y} = \mathbb{1}\{sX > \frac{1}{2}s^2+\ln(\eta)\}$
 - We are doing it this way, since the classes are balanced like we had it in the snail example.  
 
-## Types of Errors and successes
+# Types of Errors and successes
 
 We already mentioned that there are different errors which we can do with a classifier. In the snail example we could classifiy
 a snail as male if it was actual a female. We now define these types of errors more formally:
