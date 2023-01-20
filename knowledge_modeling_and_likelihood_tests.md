@@ -270,6 +270,10 @@ the mistake is connected to the before defined loss-function. Therefore we can d
 as :
 - $R[\hat{Y}]:=\mathbb{E}_{(X,Y)\sim \mathbb{P}}[loss(\hat{Y}(X),Y)]$
 
+To explain why the risk function is the mean of the loss function, we can average over samples from $\mathbb{P}$.
+To compute the loss, we have to choose samples from $\mathbb{P}$, but the question is how many samples should we take to get a 
+reliable sense of performance? The answer is, as many as needed to minimize the loss. 
+
 Obviously we want as fewer mistakes as possibles. Therefore, we want the smallest possible risk/risk-function. Instead of 
 looking for the biggest as in a maximization problem, we have here a minimization problem. We want to minimize our risk. 
 To minimize the risk, we have to use the prediction rule which leads to the smallest risk:
