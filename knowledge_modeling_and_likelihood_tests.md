@@ -471,9 +471,9 @@ a snail as male if it was actual a female. We now define these types of errors m
 - Column representing predictions and row representing true labels
 
 - True positive rate / $(TPR) = \mathbb{P}[\hat{Y}(X) = 1 \mid Y = 1]$
-- in other words: $(TPR) = \frac{\text{ number of true positives }} {\text{(number of true positives + number of false negatives)}}  
+- in other words: $(TPR) = \frac{\text{ number of true positives }} {\text{(number of true positives + number of false negatives)}}$  
 - False positive rate / $(FPR) = \mathbb{P}[Y(X) = 1 \mid Y = 0]$
-- in other words: $(FPR) = \frac{\text{number of false positives}}{\text{(number of false positives + number of true negatives)}}  
+- in other words: $(FPR) = \frac{\text{number of false positives}}{\text{(number of false positives + number of true negatives)}}$  
 - False negative rate / $(FNR) = 1 - (TPR)$
 - True negative rate / $(TNR) = 1 - (FPR)$
 
