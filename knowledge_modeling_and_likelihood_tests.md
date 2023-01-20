@@ -16,11 +16,12 @@ kernelspec:
 ```{code-cell}
 :tags: [hide-input]
 import numpy as np
-from ipywidgets import
+from ipywidgets import *
 import matplotlib.pyplot as plt
 from scipy.stats import norm
 from scipy.stats import skewnorm
 import matplotlib as mpl
+import pandas as pd
 ```
 # Knowledge Modeling and Likelihood Tests
 
@@ -28,10 +29,8 @@ import matplotlib as mpl
 
 We start with an example with a dataset called abalone, which contains information about snails. 
 We want to predict the sex of a snail from their number of rings.
-To predict the sex, we have to find the best classifier or the best predictor. 
-This is the one that makes the fewest mistakes and is also called the minimum error rule. 
 
-In our snail example, there are two kind of mistakes: 
+We can predict a snail as either a male or a female. This leads to the following possible mistakes:
 
 - Mistake 1: predicting a snail's sex as female when it is a male
 - Mistake 2: predicting a snail's sex as male when it is a female
@@ -82,6 +81,8 @@ females[14] += 5
 females[15] += 12
 females[16] += 10
 females[26] += 2
+print("sum males ", sum(males))
+print("sum females ", sum(females))
 ```
 
 We can now print a plot with the males and females and their number of rings:
@@ -98,35 +99,130 @@ ax.set_xlabel('Number of rings')
 ax.set_ylabel('Number of snails');
 ```
 
+### What is the "best" classifier?
+
+The best classifier or the best predictor, is the one that makes the fewest mistakes. 
+This is also called the minimum error rule. Remember the two mistakes we can make in the snail prediction:
+
+```{code-cell}
+:tags: [hide-input]
+fig, ax = plt.subplots(1, 1, figsize=(6, 3))
+ax.plot(-np.array([-1, 1])[np.int8(males > females)[3:]]);
+```
+
+
+### A good but impractical rule
+
+We need a good rule to find the best predictor. To do this, we have to measure the entire population of snails. 
+With the measurement, we get additional knowledge about the population / problem. This is what makes prediction possible. 
 ### Modeling Knowledge
 
 Knowledge about the population makes predictions possible in the first place. 
 The more knowledge we have, the more accurate our classifier gets. To work with this knowledge, 
 we have to represent them in a suitable way. In Machine Learning we model knowledge as probability
-distributions. 
+distributions. In the following we have some patterns $X$ and some labels $Y$. The label is in this case 
+the sex of the snail (male or female). The pattern has to do with the number of rings, since we want to predict
+the label with the number of rings (pattern). 
 - we use training and test data which are independent samples from a joint distribution
 - in other words: there is some joint distribution over patterns and labels $p_{x,y}(x,y)$ or $p(x,y)$
 - for the moment, we assume that $p$ is known
 To do predictions, we need a so-called predictor. This is a rule, a formula or an algorithm. 
+  
 
-### Prediction
+```{code-cell}
+:tags: [hide-input]
+l1, s1, a1 = 7.40, 4.48, 3.12
+l2, s2, a2 = 7.63, 4.67, 4.34
+
+x = np.linspace(skewnorm.ppf(0.001, a1, loc=l1, scale=s1),
+                skewnorm.ppf(0.999, a1, loc=l1, scale=s1), 
+                100)
+
+fig, axs = plt.subplots(1, 2, figsize=(10, 4))
+line1, = axs[0].plot(x, skewnorm.pdf(x, a1, loc=l1, scale=s1),
+       'b-', lw=4, alpha=0.6, label='skewnorm pdf')
+line2, = axs[0].plot(x, skewnorm.pdf(x, a2, loc=l2, scale=s2),
+       'r-', lw=4, alpha=0.6, label='skewnorm pdf')
+text = axs[0].text(15, 0.12, '0.000')
+
+axs[0].set_xlabel('Number of rings')
+axs[0].set_ylabel('Probability density')
+axs[0].set_ylim(0, 0.154)
+
+thr0 = 15
+thrline, = axs[0].plot([thr0, thr0], [0, 0.20])
+
+def update(thr=thr0):
+    err1 = skewnorm.cdf(thr, a2, loc=l2, scale=s2)
+    err2 = 1 - skewnorm.cdf(thr, a1, loc=l1, scale=s1)
+    
+    p_error = (err1 + err2) / 2
+    
+    thrline.set_xdata([thr, thr])
+    axs[1].plot(err1, 1 - err2, 'b.')
+    text.set_text('$\mathbb{P}_{\mathrm{err}}$ = %0.3f' % (p_error,))
+    fig.canvas.draw_idle()
+```
+
+This shows the probability densitiy function (pdf) for the males and females regarding the number of rings.
+
+```{code-cell}
+:tags: [hide-input]
+fig, axs = plt.subplots(1, 2, figsize=(10, 4))
+line1, = axs[0].plot(x, skewnorm.pdf(x, a1, loc=l1, scale=s1),
+       'b-', lw=4, alpha=0.6, label='skewnorm pdf')
+line2, = axs[0].plot(x, skewnorm.pdf(x, a2, loc=l2, scale=s2),
+       'r-', lw=4, alpha=0.6, label='skewnorm pdf')
+text = axs[0].text(15, 0.12, '0.000')
+
+axs[0].set_xlabel('Number of rings')
+axs[0].set_ylabel('Probability density')
+axs[0].set_ylim(0, 0.154)
+
+thrline, = axs[0].plot([thr0, thr0], [0, 0.20])
+interact(update, thr=(5.0, 22.5, 0.1));
+```
+
+## Prediction
 In binary classification (0, 1) we can formalize the minimum error rule / the best predictor using the following definitions:
+We can use this again for the snail example. Instead of using male and female for the sex, we are using 0 and 1. Therefore 
+Y = 1, is predicting the snail's sex as female and Y=0 is predicting the snails sex as male. 
+Y is the label or in our case the sex of a snail, which we want to predict. 
 
-Assume that $Y$ has priori probabilities: $p_0 = \mathbb{P}[Y=0], p_1=\mathbb{P}[Y=1]$. 
+Assume that $Y$ has priori probabilities: 
+- $p_0 = \mathbb{P}[Y=0]
+- p_1=\mathbb{P}[Y=1]$
+
+Regarding snails: $p_0$ is the probability that a snail's sex is male and $p_1$ is the probability that a snail's sex is female.
+Since we have the same count of males and females (see above), the probability of a snail being a male or female
+is $\frac{1}{2}$. This means that the classes are balanced. 
+
+### Prediction (continued)
+
+We use here $p$ for conditional probability, $p_0$ and $p_1$ as prior probabilities and $\mathbb{P}$ as probability itself.
+
 $p_0$ and $p_1$ are proportions of two classes in the population. If we draw a large number of $n$ 
 of samples from $p$ there will be approximately $p_0n$ labels $0$ and $p_1n$ labels $1$.
-Remember snail example where we had $p_0 = p_1 = \frac{1}{2}$ which means this two classes were balanced. 
+Remember snail example where we had $p_0 = p_1 = \frac{1}{2}$. 
 The patterns or groups are modeled by a random vector $X$. The distribution of $X$ depends on $Y$. 
 Since we have binary classification $Y$ can be either zero or one. This connection between $X$ and $Y$ is 
 called joint distribution. The conditional probabilities (probability of $x$ given $Y$) are 
+
 - $p(x \mid Y = 0)$
 - $p(x \mid Y = 1)$
 
 If we have $p(x \mid Y = y)$ we have a special case called generative models or likelihood functions. In this model 
 we have the joint probability $p(x,y) = p(x \mid Y=y)p(Y=y)$. 
 
-With the help of these definitions, the optimal predictor can finally be calculated. Since we want the optimal predictor, 
-we have to use optimization to get the correct result, in other words optimization over algorithms. 
+ 
+
+
+### Prediction via optimization
+
+With the help of these definitions above, the optimal predictor can finally be calculated. Since we want the optimal predictor, 
+we can use optimization to get the correct result, in other words optimization over algorithms. Other 
+possible methods would be prediction via networks (graph attention network, graph neural network) or compressed sensing. 
+We are going to focus on prediction via optimization
 
 We already defined the set of algorithms as $A = \left\{ f(x) = \begin{cases} 0 & \text{if}~ x \leq \eta \\ 1 & 
 \text{if}~ x > \eta \end{cases} \ \bigg| \ \eta \in \mathbb{R} \right \}
