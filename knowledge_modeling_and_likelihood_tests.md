@@ -23,7 +23,7 @@ from scipy.stats import skewnorm
 import matplotlib as mpl
 import pandas as pd
 ```
-# Knowledge Modeling and Likelihood Tests (scribing task)
+# Knowledge Modeling and Likelihood Tests
 
 # Snail Example
 
@@ -47,7 +47,7 @@ The same goes for female:
 
 ```{code-cell}
 :tags: [hide-input]
-snails = pd.read_csv('D:/Dokumente/Python Scripts/abalone.csv')
+snails = pd.read_csv('/book_data/abalone.csv')
 snails.columns = ['Sex', 'Length', 'Diameter', 'Height', 'Whole weight',
                   'Shucked weight', 'Viscera weight', 'Shell weight',
                   'Rings']
@@ -297,7 +297,7 @@ prediction (0 or 1):
 Optimal assignment is to output $\hat{Y}(x) = 1$ whenever $\mathbb{E}[loss(1,Y)\mid X=x] \leq \mathbb{E}[loss(0,Y)
 \mid X=x]
 
-## Likelihood Tests
+# Likelihood Tests
 
 For likelihood tests, we have to know about the posterior probability as well as probabilities called likelihoods:
 
@@ -317,13 +317,25 @@ and $p_y$ is the probability of observing $Y$ without any given conditions (in o
 Remember our optimal predictor: $\hat{Y}(x) = \mathbb{1}\{\mathbb{P}[Y=1\mid X=x] \geq factor \cdot \mathbb{P}[Y=0\mid X=x]\}$
 With the help of Bayes and likelihood our optimal predictor becomes:
 - $\hat{Y}(x) = \mathbb{1}\{\frac{p(x\mid Y=1)}{p(x\mid Y=0)} \geq \frac{p_o(loss(1,0)-loss(0,0))}{p_1(loss(0,1)-loss(1,1))}\}$
+- $\mathbb{P}[Y=1 \mid X=x]$ is equals $\frac{p(x\mid Y=1)}{p(x\mid Y=0)}. $\mathbb{P}(X=x\mid Y=1)$ is the same as
+$p(x\mid Y=1)$.
+- $\mathbb{P}[Y=0\mid X=x]$ is the same as $\frac{\mathbb{P}(Y=0)}{\mathbb{P}(Y=1)} which is the same as $\frac{p_0}{p_1}$
+- $p_0, p_1$ were defined above
+
+## Likelihood Ratio Test
 
 Using this predictor is called a likelihood ratio test. Generally a likelihood ratio test is a predictor of the form 
-$\hat{Y}(x) = \mathbb{1}\{\mathcal{L}(x) \geq \mathcal{n}\}$, where $\mathcal{L}(x) := \frac{p(x \mid Y=1)}{p(x\mid Y=0)}$.
-In our likelihood ratio test example we have a specific term for $\mathcal{n}$ which is also called threshold. The threshold
+$\hat{Y}(x) = \mathbb{1}\{\mathcal{L}(x) \geq \eta\}$, where $\mathcal{L}(x) := \frac{p(x \mid Y=1)}{p(x\mid Y=0)}$.
+In our likelihood ratio test example we have a specific term for $\eta$ which is also called threshold. The threshold
 has to be bigger than zero. 
 
-### Signal and Noise Example
+# Signal and Noise Example
+
+**Definitions**:
+
+- $Y$ is a label
+- $x$ is the pattern
+- $w$ is observable
 
 Using the knowledge of likelihood ratio tests we can do an example regarding signal and noise. We are still in a linear system,
  where $Y$ can be zero or one. If $Y=0$ we observe $w$, where $w \sim \mathcal{N}(0,1)$ and if $Y=1$ we observe $w + s$ 
@@ -378,6 +390,8 @@ def update(thr=thr0):
 interact(update, thr=(5.0, 22.5, 0.1));
 ```
 
+This is exactly the same plot as we already got in the section Modeling Knowledge (see above).
+
 
 ## Example with likelihood ratio tests
 
@@ -420,23 +434,29 @@ def update(thr=thr0):
 interact(update, thr=(x_min, x_max, (x_max - x_min) / 200));
 ```
 
+This is again the pdf of males and females regarding their number of rings. The difference to the plot before is,
+that we used here likelihood ratio tests. We tend to maximize $y$ which is the reason that we get a different plot. 
+
+
 ## Gaussian example
 
-Instead of normal distribution, let's now work with Gaussian distribution. For this example we define a prior probability
-$p_1 = \mathbb{P}(Y=1)$ which is very small, e.g. $p_1 = 10^{-6}$. There is no cost/loss if we declare $\hat{Y} = 0$. 
-On the other side, if we declare $\hat{Y} = 1$ we have a cost of 100 if $Y$ is actual 0 and we gain a reward if we predict correct. 
+Let's now work with Gaussian distribution. 
+- For this example we define a prior probability
+$p_1 = \mathbb{P}(Y=1)$ which is very small, e.g. $p_1 = 10^{-6}$. 
+- There is no cost/loss if we declare $\hat{Y} = 0$. 
+- On the other side, if we declare $\hat{Y} = 1$ we have a cost of 100 if $Y$ is actual 0 and we gain a reward if we predict correct. 
 
 | loss | $\hat{Y}$ = 0 | $\hat{Y}$ = 1|
 |-----|--------:|--------:|
 | $Y$ = 0 | 0   |  100  |
 | $Y$ = 1 | 0 | —1'000'000  |
 
-We can define the optimal threshold value $\mathcal{n}$ as $log\mathcal{n} = log(\frac{p_0(loss(1,0)-loss(0,0))}{p_1(loss(0,1)-loss(1,1))})
-\approx 4.61$. 
+We can define the optimal threshold value $\eta$ as $\ln(\eta) = log(\frac{p_0(loss(1,0)-loss(0,0))}{p_1(loss(0,1)-loss(1,1))})
+\approx 4.61$. We are using the before defined function (see Likelihood Tests)
 
-To receive the optimal predictor we use the calculation $logp(x\mid Y=1) = logp(x\mid Y=0) = -\frac{1}{2}(x-s)^2 + \frac{1}{2}
+To receive the optimal predictor we use the calculation $\ln p(x\mid Y=1) = \ln p(x\mid Y=0) = -\frac{1}{2}(x-s)^2 + \frac{1}{2}
 x^2 = sx-\frac{1}{2}s^2$. This leads to the following predictor:
-- $\hat{Y} = \mathbb{1}\{sX > \frac{1}{2}s^2+log(\mathcal{n})\}$ 
+- $\hat{Y} = \mathbb{1}\{sX > \frac{1}{2}s^2+log(\eta)\}$ 
 
 ## Types of Errors and successes
 
@@ -448,10 +468,14 @@ a snail as male if it was actual a female. We now define these types of errors m
 |   $\hat{Y} = 0$    | true negative  | false negative |
 |   $\hat{Y} = 1$    | false positive | true positive  |$
 
-- True positive rate / $TPR = \mathbb{P}[\hat{Y}(X) = 1 \mid Y = 1]$
-- False positive rate / $FPR = \mathbb{P}[Y(X) = 1 \mid Y = 0]$
-- False negative rate / $FNR = 1 - TPR$
-- True negative rate / $TNR = 1 - FPR$
+- Column representing predictions and row representing true labels
+
+- True positive rate / $(TPR) = \mathbb{P}[\hat{Y}(X) = 1 \mid Y = 1]$
+- in other words: $(TPR) = \frac{\text{ number of true positives }} {\text{(number of true positives + number of false negatives)}}  
+- False positive rate / $(FPR) = \mathbb{P}[Y(X) = 1 \mid Y = 0]$
+- in other words: $(FPR) = \frac{\text{number of false positives}}{\text{(number of false positives + number of true negatives)}}  
+- False negative rate / $(FNR) = 1 - (TPR)$
+- True negative rate / $(TNR) = 1 - (FPR)$
 
 
 ```{code-cell}
@@ -511,3 +535,5 @@ def update(thr=thr0):
 
 interact(update, thr=(x_min, x_max, (x_max - x_min) / 300));
 ```
+
+Here wer are again plotting the pdf of two classes. But this time we have a third curve (grey) which is the pdf of both classes together.
