@@ -27,18 +27,23 @@ import pandas as pd
 
 # Snail Example
 
-We start with an example with a dataset called abalone, which contains information about snails. 
-We want to predict the sex of a snail from their number of rings.
+We start with an example with a dataset called abalone, which contains information about snails.
+The dataset can be downloaded at https://www.kaggle.com/datasets/rodolfomendes/abalone-dataset
 
-We can predict a snail as either a male or a female. This leads to the following possible mistakes:
-
-- Mistake 1: predicting a snail's sex as female when it is a male
-- Mistake 2: predicting a snail's sex as male when it is a female
+We want to predict the sex of a snail from their number of rings. A snail is either a male 
+or a female. So we predict that a snail is a male or a female, depending on how many rings they have. 
 
 To get the predictions right, we have to know how female and male snails differ from each other. 
 Do the males have more rings (visible on their cone), do the females have a different color? 
 Answers to this questions help us to classify a snail's sex easier. 
 The more knowledge we have about the population of snails, the better we can design our classifier. 
+
+Remember, we can only predict a snail's sex as male or female. We can predict a snail as a male and find out
+it is truly a male. The same goes for a female, but we can't predict every snail's sex right. We do make mistakes.
+In this example there are the following two mistakes which can happen:
+
+- Mistake 1: predicting a snail's sex as female when it is a male
+- Mistake 2: predicting a snail's sex as male when it is a female
 
 ## Initialize Dataset
 
@@ -47,7 +52,7 @@ The same goes for female:
 
 ```{code-cell}
 :tags: [hide-input]
-snails = pd.read_csv('D:/Dokumente/UniBasel/7.Semester/Pattern Recognition/prbookOwn/book_data/abalone.csv')
+snails = pd.read_csv('./book_data/abalone.csv')
 snails.columns = ['Sex', 'Length', 'Diameter', 'Height', 'Whole weight',
                   'Shucked weight', 'Viscera weight', 'Shell weight',
                   'Rings']
@@ -64,7 +69,10 @@ females = np.zeros((30))
 for i in range(30):
     males[i] = sum(sex[number_of_rings == i] == -1)
     females[i] = sum(sex[number_of_rings == i] == 1)
-
+# number of males: 1528
+# number of females: 1307
+# in the lecture we changed participants of each group, so we have more more or less equal numbers
+# of males and females
 males[3] -= 2
 males[4] -= 3
 males[5] -= 5
@@ -81,6 +89,7 @@ females[14] += 5
 females[15] += 12
 females[16] += 10
 females[26] += 2
+# after removing some males and adding up some females we have (almost) equal numbers of females and males
 print("sum males ", sum(males))
 print("sum females ", sum(females))
 ```
@@ -107,15 +116,18 @@ This is also called the minimum error rule. Remember the two mistakes we can mak
 ```{code-cell}
 :tags: [hide-input]
 fig, ax = plt.subplots(1, 1, figsize=(6, 3))
-ax.plot(-np.array([-1, 1])[np.int8(males > females)[3:]]);
+ax.plot(np.array([-1, 1])[np.int8(males > females)[3:]]);
+ax.legend('males > females')
+ax.set_xlabel('Number of rings')
 ```
-
+We can see in the plot that we have more males than females with smaller number of rings, and more 
+females than males with bigger number of rings. 
 
 ## A good but impractical rule
 
 We need a good rule to find the best predictor. To do this, we have to measure the entire population of snails. 
 With the measurement, we get additional knowledge about the population / problem. This is what makes prediction possible. 
-# Modeling Knowledge
+## Modeling Knowledge
 
 Knowledge about the population makes predictions possible in the first place. 
 The more knowledge we have, the more accurate our classifier gets. To work with this knowledge, 
@@ -185,7 +197,9 @@ interact(update, thr=(5.0, 22.5, 0.1));
 
 # Prediction
 
-We use here $p$ for conditional probability, $p_0$ and $p_1$ as prior probabilities and $\mathbb{P}$ as probability itself.
+We use $p$ as joint probability distribution. We can use it as joint probability distribution over patterns and 
+labels $p_(X,Y)(x,y)$. For simplicity, we use $p(x,y)$. We also define $p_0$ and $p_1$ as prior probabilities
+and $\mathbb{P}$ as class-conditional probabilities. 
 
 
 In binary classification (0, 1) we can formalize the minimum error rule / the best predictor using the following definitions:
@@ -197,22 +211,18 @@ Assume that $Y$ has priori probabilities:
 - $p_0 = \mathbb{P}[Y=0]$
 - $p_1=\mathbb{P}[Y=1]$
 
+Here we specified the joint distribution via class-conditional probabilities and defined them as our prior probabilities of $Y$. 
+
 Regarding snails: $p_0$ is the probability that a snail's sex is male and $p_1$ is the probability that a snail's sex is female.
 Since we have the same count of males and females (see above), the probability of a snail being a male or female
 is $\frac{1}{2}$. This means that the classes are balanced. 
 
-## Prediction (continued)
-
 
 $p_0$ and $p_1$ are proportions of two classes in the population. If we draw a large number of $n$ 
 of samples from $p$ there will be approximately $p_0n$ labels $0$ and $p_1n$ labels $1$.
-
-
 Remember snail example where we had $p_0 = p_1 = \frac{1}{2}$. 
 The patterns or groups are modeled by a random vector $X$. The distribution of $X$ depends on $Y$. 
-Since we have binary classification $Y$ can be either zero or one. 
-
-This connection between $X$ and $Y$ is 
+Since we have binary classification $Y$ can be either zero or one. This connection between $X$ and $Y$ is 
 called joint distribution. The conditional probabilities (probability of $x$ given $Y$) are 
 
 - $p(x \mid Y = 0)$
@@ -224,16 +234,25 @@ we have the joint probability $p(x,y) = p(x \mid Y=y)p(Y=y)$.
 ## Generative Model
 
 A generative model is called so, because it can be used to generate random instances either of an observation
-and target, or of an observation $x$ given target value $y$. The term generative model is also used for models which 
+and target, or of an observation $x$ given target value $y$.
+
+In some cases the term generative model is also used for models which 
 generate instances of output variables in a way that has no clear relationship to the probability distributions over 
-potential samples of input variables. 
+potential samples of input variables. This does not apply to our usage. Generative adversarial networks are examples
+of this class of generative models, which are not counting as classifiers. 
 
  
 
 
 ## Prediction via optimization
 
-With the help of these definitions above, the optimal predictor can finally be calculated. Since we want the optimal predictor, 
+We use the following definitions: 
+
+- prior probabilities $p_0 = \mathbb{P}[Y=0], p_1 = \mathbb{P}[Y=1]$
+- conditional probability $p(x \mid Y=0), p(x\mid Y=1)$
+- joint probability $p(x,y) = p(x \mid Y=y)p(Y=y)$
+
+With the help of these definitions, the optimal predictor can finally be calculated. Since we want the optimal predictor, 
 we can use optimization to get the correct result, in other words optimization over algorithms. Other 
 possible methods would be prediction via networks (graph attention network, graph neural network) or compressed sensing. 
 We are going to focus on prediction via optimization
@@ -243,7 +262,7 @@ We already defined the set of algorithms as $A = \left\{ f(x) = \begin{cases} 0 
 $ with the optimization problem to find $f \in A$ and $f$ has to minimize $\mathbb{P}$(mistake), 
 the one with the least errors. Let's take a look at $\mathbb{P}$(mistake): 
 
-- To get the probability of false classified patterns, we have to think about all possibilities: 
+To get the probability of false classified patterns, we have to think about all possibilities: 
 - $\mathbb{P}(f(X)=0 \mid Y=1)$: predict zero but actual is 1
 - $\mathbb{P}(f(X)=1 \mid Y=0)$: predict one but actual is 0
 - $\mathbb{P}(f(X)=1 \mid Y=1)$: predict one and actual is 1
@@ -257,7 +276,7 @@ Using our knowledge from statistics/probability we have:
 
 Which leads to following equation:
 
--$\mathbb{P}(X \geq n \mid Y=1) \mathbb{P}(Y=1) + \mathbb{P}(X > n \mid Y=1)\mathbb{P}(Y=0)$
+- $\mathbb{P}(X \geq n \mid Y=1) \mathbb{P}(Y=1) + \mathbb{P}(X > n \mid Y=1)\mathbb{P}(Y=0)$
   
 The result on the calculation of our optimization is called an estimate or a prediction. Written $\hat{Y} \equiv f(X)$
 
@@ -268,8 +287,8 @@ If we have calculated $\hat{Y}$ we are interested into how good is our predictio
 Since our prediction will make mistakes, we want to make the best out of it, so we are choosing a price which we are paying
 for different kind of mistakes. This is called loss or loss-function. An easy example of a loss-function could be:
 $ loss(\hat{y}, y) = \begin{cases} 0, \hat{y} = y \\ 1, \hat{y} \neq y \end{cases}$
-More interseting is the so called Risk. **The risk defines the expectations how often our model do a mistake**. Remember, 
-the mistake is connected to the before defined loss-function. Therefore we can define the risk in case of our prediction/estimation
+More interesting is the so-called Risk. **The risk defines the expectations how often our model do a mistake**. Remember, 
+the mistake is connected to the before defined loss-function. Therefore, we can define the risk in case of our prediction/estimation
 as :
 - $R[\hat{Y}]:=\mathbb{E}_{(X,Y)\sim \mathbb{P}}[loss(\hat{Y}(X),Y)]$
 
@@ -282,7 +301,7 @@ looking for the biggest as in a maximization problem, we have here a minimizatio
 To minimize the risk, we have to use the prediction rule which leads to the smallest risk:
 - $\hat{Y} = f_{best}(X)$ where $f_{best} = arg\min\limits_{f \in A}R[f(X)]$. 
 
-## The optimal predictor
+##The optimal predictor
 
 This leads to the optimal predictor/estimate $\hat{Y}(x) = \mathbb{1}\{\mathbb{P}[Y=1\mid X=x] \geq \text{factor} \cdot 
 \mathbb{P}[Y=0 \mid X=0]\}$. $\text{factor}$ is a function regarding the different possible outcomes/losses:
@@ -297,8 +316,8 @@ prediction (0 or 1):
 - $\mathbb{E}[loss(0,Y)\mid X=x] = loss(0,0)\mathbb{P}[Y=0\mid X=x] + loss(0,1)\mathbb{P}[Y=1\mid X=x]$
 - $\mathbb{E}[loss(1,Y) \mid X=x] = loss(1,0)\mathbb{P}[Y=0\mid X=x] + loss(1,1)\mathbb{P}[Y=1\mid X=x]$
 
-Optimal assignment is to output $\hat{Y}(x) = 1$ whenever $\mathbb{E}[loss(1,Y) \mid X=x] \leq \mathbb{E}[loss(0,Y)
-\mid X=x]$
+Optimal assignment is to output $\hat{Y}(x) = 1$ whenever $\mathbb{E}[loss(1,Y)\mid X=x] \leq \mathbb{E}[loss(0,Y)
+\mid X=x]
 
 # Likelihood Tests
 
@@ -320,11 +339,9 @@ and $p_y$ is the probability of observing $Y$ without any given conditions (in o
 Remember our optimal predictor: $\hat{Y}(x) = \mathbb{1}\{\mathbb{P}[Y=1\mid X=x] \geq factor \cdot \mathbb{P}[Y=0\mid X=x]\}$
 With the help of Bayes and likelihood our optimal predictor becomes:
 - $\hat{Y}(x) = \mathbb{1}\{\frac{p(x\mid Y=1)}{p(x\mid Y=0)} \geq \frac{p_o(loss(1,0)-loss(0,0))}{p_1(loss(0,1)-loss(1,1))}\}$
-- $\mathbb{P}[Y=1 \mid X=x]$ is equals $\frac{\mathbb{P}(X=x\mid Y=1)}{\mathbb{P}(X=x\mid Y=0)}$. 
-- $\mathbb{P}(X=x\mid Y=1)$ is the same as $p(x\mid Y=1)$.
-- $\mathbb{P}(X=x \mid Y=0)$ is the same as $p(x \mid Y=0)$.
-- leads to:$\mathbb{P}[Y=1 \mid X=x] = \frac{p(x\mid Y=1)}{p(x\mid Y=0)}$
-- $\mathbb{P}[Y=0\mid X=x]$ is the same as $\frac{\mathbb{P}(Y=0)}{\mathbb{P}(Y=1)}$ which is the same as $\frac{p_0}{p_1}$
+- $\mathbb{P}[Y=1 \mid X=x]$ is equals $\frac{p(x\mid Y=1)}{p(x\mid Y=0)}. $\mathbb{P}(X=x\mid Y=1)$ is the same as
+$p(x\mid Y=1)$.
+- $\mathbb{P}[Y=0\mid X=x]$ is the same as $\frac{\mathbb{P}(Y=0)}{\mathbb{P}(Y=1)} which is the same as $\frac{p_0}{p_1}$
 - $p_0, p_1$ were defined above
 
 ## Likelihood Ratio Test
@@ -440,10 +457,10 @@ interact(update, thr=(x_min, x_max, (x_max - x_min) / 200));
 ```
 
 This is again the pdf of males and females regarding their number of rings. The difference to the plot before is,
-that we used here likelihood ratio tests. Remember Signal and Noise Example: the red curve includes the shift $s$. 
+that we used here likelihood ratio tests. We tend to maximize $y$ which is the reason that we get a different plot. 
 
 
-# Gaussian example
+## Gaussian example
 
 Let's now work with Gaussian distribution. 
 - For this example we define a prior probability
@@ -456,15 +473,14 @@ $p_1 = \mathbb{P}(Y=1)$ which is very small, e.g. $p_1 = 10^{-6}$.
 | $Y$ = 0 | 0   |  100  |
 | $Y$ = 1 | 0 | —1'000'000  |
 
-We can define the optimal threshold value $\eta$ as $\ln(\eta) = \ln(\frac{p_0(loss(1,0)-loss(0,0))}{p_1(loss(0,1)-loss(1,1))})
+We can define the optimal threshold value $\eta$ as $\ln(\eta) = log(\frac{p_0(loss(1,0)-loss(0,0))}{p_1(loss(0,1)-loss(1,1))})
 \approx 4.61$. We are using the before defined function (see Likelihood Tests)
 
 To receive the optimal predictor we use the calculation $\ln p(x\mid Y=1) = \ln p(x\mid Y=0) = -\frac{1}{2}(x-s)^2 + \frac{1}{2}
 x^2 = sx-\frac{1}{2}s^2$. This leads to the following predictor:
-- $\hat{Y} = \mathbb{1}\{sX > \frac{1}{2}s^2+\ln(\eta)\}$
-- We are doing it this way, since the classes are balanced like we had it in the snail example.  
+- $\hat{Y} = \mathbb{1}\{sX > \frac{1}{2}s^2+log(\eta)\}$ 
 
-# Types of Errors and successes
+## Types of Errors and successes
 
 We already mentioned that there are different errors which we can do with a classifier. In the snail example we could classifiy
 a snail as male if it was actual a female. We now define these types of errors more formally:
@@ -542,8 +558,4 @@ def update(thr=thr0):
 interact(update, thr=(x_min, x_max, (x_max - x_min) / 300));
 ```
 
-We have three curves:
-
-- blue: gaussian distributed-curve ($\sim \mathcal{N}(x,1)$)
-- red: gaussian distributed-curve ($\sim \mathcal{N}(x,3)$)
-- grey: difference between red and blue
+Here wer are again plotting the pdf of two classes. But this time we have a third curve (grey) which is the pdf of both classes together.
